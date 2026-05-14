@@ -7,7 +7,7 @@
 - [x] Set up pre-commit / ruff / mypy
 
 ## Phase 1: Core Data Models
-- [ ] Define Pydantic models:
+- [x] Define Pydantic models:
   - `Scenario` — контекст задачи
   - `Tool` / `ToolExample` — описание и примеры вызовов
   - `FakeTool` / `FakeToolResponse` — детерминированные моки
@@ -16,7 +16,7 @@
   - `TestResult` — результат прогона одного теста
   - `EvaluationScore` — 4 критерия + aggregate
   - `GenerationRecord` — вся история поколения
-- [ ] Config model: LLM providers, strategy, convergence params
+- [x] Config model: LLM providers, strategy, convergence params
 
 ## Phase 2: Data Loader & Setup
 - [ ] Implement YAML/JSON config loader
