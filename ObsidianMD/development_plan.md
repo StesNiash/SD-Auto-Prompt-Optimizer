@@ -1,39 +1,31 @@
 # Development Plan
 
 ## Phase 0: Project Setup
-- [x] Initialize Python project with `pyproject.toml` (Poetry or UV)
+- [x] Initialize Python project with `pyproject.toml`
 - [x] Set up project structure (core/, cli/, web/, tests/)
-- [x] Configure dependencies: LiteLLM, Pydantic, SQLite (SQLAlchemy), Rich (CLI logging)
-- [x] Set up pre-commit / ruff / mypy
+- [x] Configure dependencies: LiteLLM, Pydantic, Rich, SQLAlchemy
+- [x] Ruff / mypy config in pyproject.toml
 
 ## Phase 1: Core Data Models
-- [x] Define Pydantic models:
-  - `Scenario` — контекст задачи
-  - `Tool` / `ToolExample` — описание и примеры вызовов
-  - `FakeTool` / `FakeToolResponse` — детерминированные моки
-  - `TestCase` — input, expected_behavior, expected_output, tags
-  - `PromptVariant` — system prompt + metadata
-  - `TestResult` — результат прогона одного теста
-  - `EvaluationScore` — 4 критерия + aggregate
-  - `GenerationRecord` — вся история поколения
-- [x] Config model: LLM providers, strategy, convergence params
+- [x] Pydantic models: Scenario, Tool, FakeTool, TestCase, PromptVariant
+- [x] Evaluation models: 4-criteria scoring
+- [x] Config: RunConfig, EvolutionConfig, WeightsConfig, ModelConfig
+- [x] Settings: API keys via pydantic-settings (SDOPT_ prefix)
 
 ## Phase 2: Data Loader & Setup
-- [x] Implement YAML/JSON config loader
-- [x] Implement FakeToolsGenerator — LLM генерирует моки из Tool spec
-- [x] Implement TestCasesGenerator — LLM генерирует доп. кейсы на основе сценария
-- [x] Implement StrategySelector — обработка выбора мутации, моделей
+- [x] YAML config loader
+- [x] FakeToolsGenerator — LLM генерирует моки из Tool spec
+- [x] TestCasesGenerator — LLM генерирует доп. кейсы
+- [x] SetupPipeline — оркестратор setup-фазы
 
 ## Phase 3: Simulation Engine
-- [x] Implement LLM client abstraction (через LiteLLM)
-- [x] Implement `AgentSimulator` — запускает system prompt + user input, поддерживает tool calls
-- [x] Implement `FakeToolExecutor` — по сценарию тест-кейса возвращает нужный мок-ответ
-- [x] Результат: финальный ответ + последовательность tool calls
+- [x] LLMClient — complete() + generate() через LiteLLM
+- [x] AgentSimulator — system prompt → tool calls → response
+- [x] FakeToolExecutor — детерминированные мок-ответы
 
 ## Phase 4: Evaluation Engine
-- [ ] Implement `Judge` — LLM-as-a-judge по 4 критериям
-- [ ] Implement scoring: weighted_sum → aggregate per prompt
-- [ ] Сохранение всей истории оценок в SQLite
+- [x] Judge — LLM-as-a-judge (4 критерия)
+- [x] Evaluator — скоринг и агрегация
 
 ## Phase 5: Evolutionary Loop
 - [ ] Implement `PromptGenerator`:
