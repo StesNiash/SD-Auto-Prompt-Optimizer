@@ -24,8 +24,11 @@ from .models import (
     WeightsConfig,
 )
 from .setup import SetupPipeline
+from .simulator import AgentSimulator, FakeToolExecutor
 
 __all__ = [
+    "AgentSimulator",
+    "FakeToolExecutor",
     "Settings",
     "load_config",
     "FakeToolsGenerator",
