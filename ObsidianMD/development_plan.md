@@ -1,10 +1,10 @@
 # Development Plan
 
 ## Phase 0: Project Setup
-- [ ] Initialize Python project with `pyproject.toml` (Poetry or UV)
-- [ ] Set up project structure (core/, cli/, web/, tests/)
-- [ ] Configure dependencies: LiteLLM, Pydantic, SQLite (SQLAlchemy), Rich (CLI logging)
-- [ ] Set up pre-commit / ruff / mypy
+- [x] Initialize Python project with `pyproject.toml` (Poetry or UV)
+- [x] Set up project structure (core/, cli/, web/, tests/)
+- [x] Configure dependencies: LiteLLM, Pydantic, SQLite (SQLAlchemy), Rich (CLI logging)
+- [x] Set up pre-commit / ruff / mypy
 
 ## Phase 1: Core Data Models
 - [ ] Define Pydantic models:
