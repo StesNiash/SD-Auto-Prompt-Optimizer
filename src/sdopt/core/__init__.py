@@ -1,4 +1,6 @@
 from .config import Settings, load_config
+from .generators import FakeToolsGenerator, TestCasesGenerator
+from .llm import LLMClient
 from .models import (
     EvaluationScore,
     EvaluatedTestResult,
@@ -8,6 +10,7 @@ from .models import (
     ExpectedOutput,
     FakeTool,
     FakeToolResponse,
+    FakeToolResponseRef,
     GenerationRecord,
     ModelConfig,
     PromptEvaluation,
@@ -20,10 +23,15 @@ from .models import (
     ToolExample,
     WeightsConfig,
 )
+from .setup import SetupPipeline
 
 __all__ = [
     "Settings",
     "load_config",
+    "FakeToolsGenerator",
+    "TestCasesGenerator",
+    "LLMClient",
+    "SetupPipeline",
     "EvaluationScore",
     "EvaluatedTestResult",
     "EvolutionConfig",
@@ -32,6 +40,7 @@ __all__ = [
     "ExpectedOutput",
     "FakeTool",
     "FakeToolResponse",
+    "FakeToolResponseRef",
     "GenerationRecord",
     "ModelConfig",
     "PromptEvaluation",

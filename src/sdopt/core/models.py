@@ -28,6 +28,11 @@ class FakeTool(BaseModel):
     responses: list[FakeToolResponse]
 
 
+class FakeToolResponseRef(BaseModel):
+    tool_name: str
+    scenario_match: str
+
+
 class ExpectedBehavior(BaseModel):
     tool_calls: list[str] | None = None
     constraints: list[str] | None = None
@@ -43,6 +48,7 @@ class TestCase(BaseModel):
     input: str
     expected_behavior: ExpectedBehavior | None = None
     expected_output: ExpectedOutput | None = None
+    tool_scenarios: dict[str, str] | None = None
     tags: list[str] = Field(default_factory=list)
 
 
@@ -128,6 +134,7 @@ class RunConfig(BaseModel):
     scenario: str
     basic_prompt: str
     tools: list[Tool] = Field(default_factory=list)
+    fake_tools: list[FakeTool] = Field(default_factory=list)
     test_cases: list[TestCase]
     evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
     weights: WeightsConfig = Field(default_factory=WeightsConfig)

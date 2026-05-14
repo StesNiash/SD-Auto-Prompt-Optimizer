@@ -19,10 +19,10 @@
 - [x] Config model: LLM providers, strategy, convergence params
 
 ## Phase 2: Data Loader & Setup
-- [ ] Implement YAML/JSON config loader
-- [ ] Implement FakeToolsGenerator — LLM генерирует моки из Tool spec
-- [ ] Implement TestCasesGenerator — LLM генерирует доп. кейсы на основе сценария
-- [ ] Implement StrategySelector — обработка выбора мутации, моделей
+- [x] Implement YAML/JSON config loader
+- [x] Implement FakeToolsGenerator — LLM генерирует моки из Tool spec
+- [x] Implement TestCasesGenerator — LLM генерирует доп. кейсы на основе сценария
+- [x] Implement StrategySelector — обработка выбора мутации, моделей
 
 ## Phase 3: Simulation Engine
 - [ ] Implement LLM client abstraction (через LiteLLM)
