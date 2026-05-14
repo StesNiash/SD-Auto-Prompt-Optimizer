@@ -1,18 +1,13 @@
 {
 	"nodes":[
 		{"id":"pipeline-group","type":"group","x":-565,"y":-279,"width":570,"height":799,"color":"5","label":"Evolutionary Pipeline"},
-		{"id":"data-group","type":"group","x":-1160,"y":-780,"width":580,"height":400,"color":"3","label":"Data (Input)"},
+		{"id":"data-group","type":"group","x":50,"y":-780,"width":580,"height":400,"color":"3","label":"Data (Input)"},
 		{"id":"ui-group","type":"group","x":140,"y":-92,"width":400,"height":425,"color":"2","label":"Observability (UI)"},
 		{"id":"setup-group","type":"group","x":-480,"y":-740,"width":400,"height":320,"color":"4","label":"Setup"},
 		{"id":"node-validate","type":"text","text":"1. Validate input data","x":-460,"y":-720,"width":360,"height":50},
 		{"id":"node-gen-fake","type":"text","text":"2. Generate Fake Tools from Tools spec","x":-460,"y":-650,"width":360,"height":50},
 		{"id":"node-gen-cases","type":"text","text":"3. Generate extra test cases if needed","x":-460,"y":-580,"width":360,"height":50},
 		{"id":"node-strategy","type":"text","text":"4. Select mutation strategy & models","x":-460,"y":-510,"width":360,"height":60},
-		{"id":"node-scenario","type":"text","text":"**Scenario** (context)","x":-1140,"y":-760,"width":250,"height":60},
-		{"id":"node-basic-prompt","type":"text","text":"**Basic Prompt**","x":-1140,"y":-670,"width":250,"height":60},
-		{"id":"node-tools","type":"text","text":"**Tools** \n(descriptions + examples)","x":-1140,"y":-580,"width":250,"height":60},
-		{"id":"node-fake-tools","type":"text","text":"**Fake Tools** (generated)\nDeterministic mocks with\nall possible outcomes","x":-850,"y":-760,"width":250,"height":110},
-		{"id":"node-test-cases","type":"text","text":"**Test Cases**\n- input\n- expected_behavior (tool_calls?)\n- expected_output","x":-850,"y":-620,"width":250,"height":200},
 		{"id":"node-test","type":"text","text":"**2. Test prompts**\nRun all prompts on all test cases","x":-345,"y":-129,"width":300,"height":70},
 		{"id":"node-evaluate","type":"text","text":"**3. Evaluate** (LLM-as-a-judge)\nCorrectness / Efficiency / Helpfulness / Robustness","x":-345,"y":-9,"width":300,"height":98},
 		{"id":"node-generate","type":"text","text":"**1. Generate Prompt Variants**\n(Crossover / Targeted / Baseline)","x":-345,"y":-249,"width":300,"height":70},
@@ -24,11 +19,16 @@
 		{"id":"node-ui-tree","type":"text","text":"**Evolution Tree**\nGenerations → prompts → scores","x":160,"y":-72,"width":360,"height":60},
 		{"id":"node-ui-drill","type":"text","text":"**Drill-down**\nPrompt → all test results","x":160,"y":28,"width":360,"height":60},
 		{"id":"node-ui-copy","type":"text","text":"**Copy any prompt**","x":160,"y":128,"width":360,"height":60},
-		{"id":"node-ui-live","type":"text","text":"**Live progress**\nCurrent generation, scores, logs","x":160,"y":228,"width":360,"height":60}
+		{"id":"node-ui-live","type":"text","text":"**Live progress**\nCurrent generation, scores, logs","x":160,"y":228,"width":360,"height":60},
+		{"id":"node-scenario","type":"text","text":"**Scenario** (context)","x":70,"y":-760,"width":250,"height":60},
+		{"id":"node-basic-prompt","type":"text","text":"**Basic Prompt**","x":70,"y":-670,"width":250,"height":60},
+		{"id":"node-tools","type":"text","text":"**Tools** \n(descriptions + examples)","x":70,"y":-580,"width":250,"height":60},
+		{"id":"node-fake-tools","type":"text","text":"**Fake Tools** (generated)\nDeterministic mocks with\nall possible outcomes","x":360,"y":-760,"width":250,"height":110},
+		{"id":"node-test-cases","type":"text","text":"**Test Cases**\n- input\n- expected_behavior (tool_calls?)\n- expected_output","x":360,"y":-620,"width":250,"height":200}
 	],
 	"edges":[
 		{"id":"e-entry","fromNode":"setup-group","fromSide":"bottom","toNode":"pipeline-group","toSide":"top"},
-		{"id":"e-data-to-setup","fromNode":"data-group","fromSide":"right","toNode":"setup-group","toSide":"left","fromEnd":"arrow"},
+		{"id":"e-data-to-setup","fromNode":"data-group","fromSide":"left","toNode":"setup-group","toSide":"right","fromEnd":"arrow"},
 		{"id":"e-setup1","fromNode":"node-validate","fromSide":"bottom","toNode":"node-gen-fake","toSide":"top"},
 		{"id":"e-setup2","fromNode":"node-gen-fake","fromSide":"bottom","toNode":"node-gen-cases","toSide":"top"},
 		{"id":"e-setup3","fromNode":"node-gen-cases","fromSide":"bottom","toNode":"node-strategy","toSide":"top"},

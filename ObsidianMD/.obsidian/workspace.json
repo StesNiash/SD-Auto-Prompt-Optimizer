@@ -11,10 +11,17 @@
             "id": "f29844dba66ab7db",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Граф"
+              "type": "canvas",
+              "state": {
+                "file": "scheme.canvas",
+                "viewState": {
+                  "x": 65.551679470935,
+                  "y": -169.2540924413417,
+                  "zoom": -0.6650157522871916
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "scheme"
             }
           }
         ]
@@ -90,6 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "scheme.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,7 +107,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки"
+              "title": "Обратные ссылки для scheme"
             }
           },
           {
@@ -108,11 +116,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "scheme.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки"
+              "title": "Исходящие ссылки из scheme"
             }
           },
           {
@@ -150,12 +159,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "scheme.canvas",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура"
+              "title": "Структура scheme"
             }
           }
         ]
