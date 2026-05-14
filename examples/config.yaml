@@ -1,0 +1,78 @@
+scenario: |
+  You are a customer support agent for a bank.
+  Help clients with transactions, account issues, and fraud reports.
+
+basic_prompt: |
+  You are a helpful assistant.
+
+tools:
+  - name: check_balance
+    description: Check account balance
+    examples:
+      - input: '{"account_id": "123"}'
+        output: '{"balance": 1500.00}'
+      - input: '{"account_id": "999"}'
+        output: '{"error": "account_not_found"}'
+  - name: transfer_funds
+    description: Transfer money between accounts
+    examples:
+      - input: '{"from": "123", "to": "456", "amount": 100}'
+        output: '{"status": "success", "tx_id": "tx_001"}'
+      - input: '{"from": "123", "to": "456", "amount": 10000}'
+        output: '{"error": "insufficient_funds"}'
+
+test_cases:
+  - input: "What's my balance?"
+    expected_behavior:
+      tool_calls:
+        - check_balance
+    expected_output:
+      text_contains:
+        - "balance"
+        - "$"
+    tags:
+      - happy_path
+
+  - input: "Transfer $100 to account 456"
+    expected_behavior:
+      tool_calls:
+        - transfer_funds
+    expected_output:
+      text_contains:
+        - "success"
+        - "tx_001"
+    tags:
+      - happy_path
+
+  - input: "Transfer $10000 to account 456"
+    expected_behavior:
+      tool_calls:
+        - transfer_funds
+    expected_output:
+      text_contains:
+        - "insufficient funds"
+        - "sorry"
+    tags:
+      - error_case
+
+evolution:
+  strategy: all  # crossover | targeted | baseline | all
+  population_size: 8
+  selection_top_k: 3
+  max_generations: 10
+  convergence_threshold: 0.95
+  patience: 3
+
+models:
+  generation:
+    provider: openai
+    model: gpt-4o-mini
+    temperature: 0.8
+  evaluation:
+    provider: openai
+    model: gpt-4o
+    temperature: 0.0
+  simulation:
+    provider: openai
+    model: gpt-4o-mini
+    temperature: 0.0
