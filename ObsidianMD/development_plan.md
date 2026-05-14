@@ -25,10 +25,10 @@
 - [x] Implement StrategySelector — обработка выбора мутации, моделей
 
 ## Phase 3: Simulation Engine
-- [ ] Implement LLM client abstraction (через LiteLLM)
-- [ ] Implement `AgentSimulator` — запускает system prompt + user input, поддерживает tool calls
-- [ ] Implement `FakeToolExecutor` — по сценарию тест-кейса возвращает нужный мок-ответ
-- [ ] Результат: финальный ответ + последовательность tool calls
+- [x] Implement LLM client abstraction (через LiteLLM)
+- [x] Implement `AgentSimulator` — запускает system prompt + user input, поддерживает tool calls
+- [x] Implement `FakeToolExecutor` — по сценарию тест-кейса возвращает нужный мок-ответ
+- [x] Результат: финальный ответ + последовательность tool calls
 
 ## Phase 4: Evaluation Engine
 - [ ] Implement `Judge` — LLM-as-a-judge по 4 критериям

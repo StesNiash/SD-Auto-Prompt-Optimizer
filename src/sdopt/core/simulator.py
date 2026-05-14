@@ -4,8 +4,6 @@ import json
 import logging
 from typing import Sequence
 
-import litellm
-
 from .llm import LLMClient
 from .models import (
     FakeTool,
@@ -97,8 +95,7 @@ class AgentSimulator:
 
     async def simulate(self, system_prompt: str, test_case: TestCase) -> TestResult:
         executor = FakeToolExecutor(self._fake_tools, test_case.tool_scenarios)
-
-        openai_tools = [_tool_to_openai_func(t) for t in self._tools]
+        openai_tools = [_tool_to_openai_func(t) for t in self._tools] or None
 
         messages: list[dict] = [
             {"role": "system", "content": system_prompt},
@@ -108,40 +105,31 @@ class AgentSimulator:
         calls: list[ToolCallRecord] = []
 
         for _ in range(10):
-            response = await litellm.acompletion(
-                model=f"{self._model_cfg.provider}/{self._model_cfg.model}",
+            resp = await self._llm.complete(
                 messages=messages,
-                tools=openai_tools or None,
-                temperature=self._model_cfg.temperature,
-                max_tokens=self._model_cfg.max_tokens or 4096,
+                model_cfg=self._model_cfg,
+                tools=openai_tools,
             )
 
-            msg = response.choices[0].message
-
-            if msg.tool_calls:
-                for tc in msg.tool_calls:
-                    fn_name = tc.function.name
-                    fn_args = tc.function.arguments
-                    rec = executor.execute(fn_name, fn_args)
+            if resp.tool_calls:
+                for tc in resp.tool_calls:
+                    rec = executor.execute(tc.name, tc.arguments)
                     calls.append(rec)
                     messages.append({
                         "role": "tool",
                         "tool_call_id": tc.id,
                         "content": rec.output,
                     })
-                if msg.content:
-                    messages.append({"role": "assistant", "content": msg.content})
                 continue
 
-            final = msg.content or ""
             return TestResult(
                 prompt_id="",
                 test_case=test_case,
-                response=final,
+                response=resp.content or "",
                 tool_calls=calls,
             )
 
-        logger.warning("Simulator reached max iterations, returning last response")
+        logger.warning("Simulator reached max iterations")
         return TestResult(
             prompt_id="",
             test_case=test_case,

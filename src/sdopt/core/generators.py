@@ -6,10 +6,7 @@ from typing import Sequence
 
 from .llm import LLMClient
 from .models import (
-    ExpectedBehavior,
-    ExpectedOutput,
     FakeTool,
-    FakeToolResponse,
     ModelConfig,
     TestCase,
     Tool,

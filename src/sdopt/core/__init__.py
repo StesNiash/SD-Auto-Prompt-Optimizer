@@ -1,6 +1,6 @@
 from .config import Settings, load_config
 from .generators import FakeToolsGenerator, TestCasesGenerator
-from .llm import LLMClient
+from .llm import LLMClient, LLMResponse, ToolCall
 from .models import (
     EvaluationScore,
     EvaluatedTestResult,
@@ -29,6 +29,8 @@ from .simulator import AgentSimulator, FakeToolExecutor
 __all__ = [
     "AgentSimulator",
     "FakeToolExecutor",
+    "LLMResponse",
+    "ToolCall",
     "Settings",
     "load_config",
     "FakeToolsGenerator",
