@@ -4,24 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "6d1a73603ee91e67",
+        "id": "d51f61ff9ba5241b",
         "type": "tabs",
         "children": [
           {
-            "id": "f9bea7e2d96209eb",
+            "id": "f29844dba66ab7db",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "scheme.canvas",
-                "viewState": {
-                  "x": -113.18347875370208,
-                  "y": -121.77071899422526,
-                  "zoom": -0.6666666666666667
-                }
+                "file": "main_idea.md",
+                "mode": "preview",
+                "source": false
               },
-              "icon": "lucide-layout-dashboard",
-              "title": "scheme"
+              "icon": "lucide-file",
+              "title": "main_idea"
             }
           }
         ]
@@ -97,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "scheme.canvas",
+                "file": "main_idea.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -107,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки для scheme"
+              "title": "Обратные ссылки для main_idea"
             }
           },
           {
@@ -116,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "scheme.canvas",
+                "file": "main_idea.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки из scheme"
+              "title": "Исходящие ссылки из main_idea"
             }
           },
           {
@@ -159,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "scheme.canvas",
+                "file": "main_idea.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура scheme"
+              "title": "Структура main_idea"
             }
           }
         ]
@@ -186,10 +183,10 @@
       "bases:Создать новую базу": false
     }
   },
-  "active": "f9bea7e2d96209eb",
+  "active": "f29844dba66ab7db",
   "lastOpenFiles": [
-    "main_idea.md",
     "scheme.canvas",
+    "main_idea.md",
     "Текстовый документ.txt",
     "Без названия.md",
     "Без названия.canvas.md",
