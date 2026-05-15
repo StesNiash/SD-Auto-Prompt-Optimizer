@@ -45,10 +45,10 @@
 - [x] API-ключи: apply_settings() в LLMClient.__init__
 
 ## Phase 7: Persistence & Logging
-- [ ] SQLite schema (SQLAlchemy):
-  - runs, generations, prompts, test_results, evaluations
-- [ ] Экспорт результатов: JSON / YAML / Markdown report
-- [ ] Seed-based reproducibility
+- [x] SQLite database (runs table with JSON columns)
+- [x] RunDatabase: create_run, finish_run, fail_run, get_run, list_runs
+- [x] Экспорт: sdopt export <id> --format json|md --output file
+- [x] sdopt list / view / compare — все работают через базу
 
 ## Phase 8: UI (Web)
 - [ ] React + TypeScript + Vite setup

@@ -3,6 +3,7 @@ from .evaluation import Evaluator, Judge
 from .evolution import ConvergenceDetector, EvolutionEngine, PromptGenerator
 from .generators import FakeToolsGenerator, TestCasesGenerator
 from .llm import LLMClient, LLMResponse, ToolCall
+from .persistence import RunDatabase
 from .models import (
     EvaluationScore,
     EvaluatedTestResult,
@@ -37,6 +38,7 @@ __all__ = [
     "Judge",
     "LLMResponse",
     "PromptGenerator",
+    "RunDatabase",
     "ToolCall",
     "Settings",
     "load_config",
