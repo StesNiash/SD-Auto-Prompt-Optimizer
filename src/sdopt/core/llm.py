@@ -35,14 +35,19 @@ class LLMClient:
     ) -> LLMResponse:
         model = f"{model_cfg.provider}/{model_cfg.model}"
 
+        kwargs = dict(
+            model=model,
+            messages=messages,
+            temperature=model_cfg.temperature,
+            max_tokens=model_cfg.max_tokens or 4096,
+        )
+        if tools:
+            kwargs["tools"] = tools
+        if model_cfg.api_base:
+            kwargs["api_base"] = model_cfg.api_base
+
         try:
-            response = await litellm.acompletion(
-                model=model,
-                messages=messages,
-                tools=tools or None,
-                temperature=model_cfg.temperature,
-                max_tokens=model_cfg.max_tokens or 4096,
-            )
+            response = await litellm.acompletion(**kwargs)
         except Exception:
             logger.exception("LLM call failed: %s", model)
             return LLMResponse(content="")

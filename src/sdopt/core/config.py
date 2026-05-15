@@ -8,6 +8,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .models import RunConfig
 
 
+UNPREFIXED_KEYS = {
+    "openai_api_key": "OPENAI_API_KEY",
+    "anthropic_api_key": "ANTHROPIC_API_KEY",
+    "google_api_key": "GEMINI_API_KEY",
+    "openrouter_api_key": "OPENROUTER_API_KEY",
+}
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -24,14 +32,10 @@ class Settings(BaseSettings):
 
 def apply_settings(settings: Settings) -> None:
     import os
-    if settings.openai_api_key:
-        os.environ.setdefault("OPENAI_API_KEY", settings.openai_api_key)
-    if settings.anthropic_api_key:
-        os.environ.setdefault("ANTHROPIC_API_KEY", settings.anthropic_api_key)
-    if settings.google_api_key:
-        os.environ.setdefault("GEMINI_API_KEY", settings.google_api_key)
-    if settings.openrouter_api_key:
-        os.environ.setdefault("OPENROUTER_API_KEY", settings.openrouter_api_key)
+    for field, env_name in UNPREFIXED_KEYS.items():
+        val = getattr(settings, field, "") or os.environ.get(env_name, "")
+        if val:
+            os.environ[env_name] = val
 
 
 def load_config(path: str | Path) -> RunConfig:
