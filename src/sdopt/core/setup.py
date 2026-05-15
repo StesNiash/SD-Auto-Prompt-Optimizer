@@ -26,6 +26,7 @@ class SetupPipeline:
             )
             cfg.fake_tools = await gen.generate(cfg.tools, cfg.scenario)
             logger.info("Generated %d fake tools", len(cfg.fake_tools))
+            self._assign_tool_scenarios(cfg)
 
         if len(cfg.test_cases) < self.MIN_TEST_CASES:
             needed = self.MIN_TEST_CASES - len(cfg.test_cases)
@@ -47,3 +48,25 @@ class SetupPipeline:
             logger.info("Now have %d test cases", len(cfg.test_cases))
 
         return cfg
+
+    @staticmethod
+    def _assign_tool_scenarios(cfg: RunConfig) -> None:
+        ft_by_name = {ft.tool_name: ft for ft in cfg.fake_tools}
+        for tc in cfg.test_cases:
+            if not tc.expected_behavior or not tc.expected_behavior.tool_calls:
+                continue
+            mapping: dict[str, str] = {}
+            for tool_name in tc.expected_behavior.tool_calls:
+                ft = ft_by_name.get(tool_name)
+                if not ft or not ft.responses:
+                    continue
+                if "error" in (tc.tags or []):
+                    match = next(
+                        (r for r in ft.responses if "error" in r.scenario_match.lower()),
+                        None,
+                    )
+                    if match:
+                        mapping[tool_name] = match.scenario_match
+                        continue
+                mapping[tool_name] = ft.responses[0].scenario_match
+            tc.tool_scenarios = mapping if mapping else None

@@ -5,7 +5,7 @@ import logging
 import litellm
 from pydantic import BaseModel
 
-from .config import Settings
+from .config import Settings, apply_settings
 from .models import ModelConfig
 
 logger = logging.getLogger(__name__)
@@ -22,16 +22,10 @@ class LLMResponse(BaseModel):
     tool_calls: list[ToolCall] | None = None
 
 
-_model_key_map = {
-    "openai": ("OPENAI_API_KEY", "openai_api_key"),
-    "anthropic": ("ANTHROPIC_API_KEY", "anthropic_api_key"),
-    "gemini": ("GEMINI_API_KEY", "google_api_key"),
-}
-
-
 class LLMClient:
     def __init__(self, settings: Settings | None = None):
         self.settings = settings or Settings()
+        apply_settings(self.settings)
 
     async def complete(
         self,

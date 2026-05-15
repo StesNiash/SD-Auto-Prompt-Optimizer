@@ -39,12 +39,19 @@ Return ONLY a JSON object:
 }"""
 
 
+DEFAULT_SCORE = 0.5
+
+
 def _parse_score_json(text: str) -> dict:
     text = text.strip()
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if match:
         text = match.group(0)
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        logger.error("Failed to parse judge JSON: %s\nRaw: %s", e, text[:300])
+        return {}
 
 
 class Judge:

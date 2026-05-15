@@ -34,9 +34,15 @@
 
 ## Phase 6: CLI Interface
 - [x] `sdopt run config.yaml` — полный пайплайн + Rich progress
-- [x] `sdopt view <run-id>` — заглушка (будет в Phase 7)
-- [x] `sdopt compare <run-a> <run-b>` — заглушка (будет в Phase 7)
+- [x] `sdopt view / compare` — заглушки (Phase 7)
 - [x] Rich: progress bar, таблицы, цветные скоры
+
+## Bugfixes
+- [x] Симулятор: исправлена OpenAI function schema
+- [x] Парсинг JSON: try/except в генераторах и judge
+- [x] Tool scenarios: автопривязка тест-кейсов к fake tools
+- [x] OpenRouter: поддержка + настройка API ключа
+- [x] API-ключи: apply_settings() в LLMClient.__init__
 
 ## Phase 7: Persistence & Logging
 - [ ] SQLite schema (SQLAlchemy):

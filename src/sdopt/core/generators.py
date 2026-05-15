@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 from typing import Sequence
 
@@ -41,12 +42,19 @@ Make inputs realistic and varied in phrasing.
 Return valid JSON array."""
 
 
+logger = logging.getLogger(__name__)
+
+
 def _parse_json_list(text: str):
     text = text.strip()
     code_match = re.search(r"```(?:json)?\s*(\[.*?\])\s*```", text, re.DOTALL)
     if code_match:
         text = code_match.group(1)
-    return json.loads(text)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        logger.error("Failed to parse JSON list: %s\nRaw: %s", e, text[:300])
+        return []
 
 
 class FakeToolsGenerator:

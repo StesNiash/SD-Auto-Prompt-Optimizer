@@ -26,13 +26,12 @@ def _tool_to_openai_func(tool: Tool) -> dict:
             "parameters": {
                 "type": "object",
                 "properties": {
-                    tool.name: {
-                        "type": "object",
-                        "description": f"Input parameters for {tool.name}",
-                        "additionalProperties": True,
+                    "input": {
+                        "type": "string",
+                        "description": f"Input data for {tool.name} as JSON string",
                     }
                 },
-                "required": [tool.name],
+                "required": ["input"],
             },
         },
     }
