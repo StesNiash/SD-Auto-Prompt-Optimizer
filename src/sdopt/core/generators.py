@@ -28,21 +28,53 @@ Each response must have:
 TESTCASE_SYSTEM_PROMPT = """You are a test case designer for AI agent evaluation.
 Given a scenario description and a list of available tools, generate diverse test cases.
 
-Each test case must include:
-- input: what the user says to the agent
-- expected_behavior.tool_calls: which tools the agent should call (if any)
-- expected_behavior.constraints: constraints the agent must follow
-- expected_output.text_contains: strings that must appear in the response
-- expected_output.text_not_contains: strings that must NOT appear
-- tags: one or more of: happy_path, error_case, edge_case, ambiguous, multi_tool
+Return a JSON array. Each item must follow this exact schema:
+{
+  "input": "user message to the agent",
+  "expected_behavior": {
+    "tool_calls": ["tool_name1", "tool_name2"],
+    "constraints": ["must not ask for confirmation twice"]
+  },
+  "expected_output": {
+    "text_contains": ["expected substring"],
+    "text_not_contains": ["forbidden substring"],
+    "format": "text | json | markdown"
+  },
+  "tags": ["happy_path"]
+}
 
-Cover: happy paths, error scenarios, edge cases, ambiguous requests, multi-step requests.
-Make inputs realistic and varied in phrasing.
+RULES:
+- Omit fields entirely (not null, not empty object) when not applicable
+- expected_behavior.tool_calls: list of tool names or omit
+- expected_behavior.constraints: list of strings or omit
+- expected_output.text_contains / text_not_contains: list of strings or omit
+- expected_output.format: one of text/json/markdown or omit
+- tags: one or more of happy_path, error_case, edge_case, ambiguous, multi_tool
 
-Return valid JSON array."""
+Cover: happy paths, error scenarios, edge cases, ambiguous requests. Make inputs realistic."""
 
 
 logger = logging.getLogger(__name__)
+
+
+def _drop_empty(obj, fields):
+    for f in fields:
+        val = obj.get(f)
+        if val == {} or val == [] or val is None:
+            obj.pop(f, None)
+    return obj
+
+
+def _coerce_test_case(item: dict) -> dict:
+    _drop_empty(item, ("expected_behavior", "expected_output"))
+    for key in ("expected_behavior", "expected_output"):
+        sub = item.get(key)
+        if isinstance(sub, dict):
+            sub.pop("constraints", None) if sub.get("constraints") == {} else None
+            sub.pop("tool_calls", None) if sub.get("tool_calls") == [] else None
+            sub.pop("text_contains", None) if sub.get("text_contains") == [] else None
+            sub.pop("text_not_contains", None) if sub.get("text_not_contains") == [] else None
+    return item
 
 
 def _parse_json_list(text: str):
@@ -83,7 +115,13 @@ Return a JSON array of FakeTool objects (tool_name + responses list)."""
         )
 
         data = _parse_json_list(raw)
-        return [FakeTool(**item) for item in data]
+        result: list[FakeTool] = []
+        for item in data:
+            try:
+                result.append(FakeTool(**item))
+            except Exception as e:
+                logger.warning("Skipping bad fake tool: %s\nData: %s", e, str(item)[:200])
+        return result
 
 
 class TestCasesGenerator:
@@ -124,7 +162,13 @@ Return a JSON array of test cases."""
         )
 
         data = _parse_json_list(raw)
-        return [TestCase(**item) for item in data]
+        result: list[TestCase] = []
+        for item in data:
+            try:
+                result.append(TestCase(**_coerce_test_case(item)))
+            except Exception as e:
+                logger.warning("Skipping bad test case: %s\nData: %s", e, str(item)[:200])
+        return result
 
 
 def _format_tool(t: Tool) -> str:
