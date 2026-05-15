@@ -33,11 +33,10 @@
 - [x] ConvergenceDetector: threshold + patience
 
 ## Phase 6: CLI Interface
-- [ ] CLI с использованием Rich:
-  - `sdopt run config.yaml` — запуск оптимизации
-  - `sdopt view <run-id>` — просмотр результатов
-  - `sdopt compare <run-id-1> <run-id-2>` — сравнение
-- [ ] Live progress bar в терминале
+- [x] `sdopt run config.yaml` — полный пайплайн + Rich progress
+- [x] `sdopt view <run-id>` — заглушка (будет в Phase 7)
+- [x] `sdopt compare <run-a> <run-b>` — заглушка (будет в Phase 7)
+- [x] Rich: progress bar, таблицы, цветные скоры
 
 ## Phase 7: Persistence & Logging
 - [ ] SQLite schema (SQLAlchemy):
