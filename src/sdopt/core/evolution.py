@@ -3,7 +3,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-from typing import Sequence
+from collections.abc import Callable
+from typing import Any, Sequence
 
 from .evaluation import Evaluator
 from .llm import LLMClient
@@ -152,6 +153,7 @@ class EvolutionEngine:
         sim_model: ModelConfig,
         eval_model: ModelConfig,
         gen_model: ModelConfig,
+        on_event: Callable[[str, dict[str, Any]], None] | None = None,
     ):
         self._cfg = cfg
         self._generator = PromptGenerator(llm, gen_model, cfg.scenario)
@@ -162,6 +164,10 @@ class EvolutionEngine:
         self._detector = ConvergenceDetector(cfg.evolution)
         self._evolve_cfg = cfg.evolution
         self._test_cases = cfg.test_cases
+        self._on_event = on_event or (lambda _ev, _kw: None)
+
+    def _emit(self, event: str, **kw: Any) -> None:
+        self._on_event(event, kw)
 
     async def run(self) -> GenerationRecord:
         population = await self._generator.initialize(
@@ -169,8 +175,12 @@ class EvolutionEngine:
         )
         best_overall: PromptEvaluation | None = None
 
+        n_prompts = len(population)
+        n_tests = len(self._test_cases)
+
         for gen in range(self._evolve_cfg.max_generations):
-            logger.info("=== Generation %d (%d prompts) ===", gen, len(population))
+            logger.info("=== Generation %d (%d prompts) ===", gen, n_prompts)
+            self._emit("generation_start", gen=gen, max_gen=self._evolve_cfg.max_generations)
 
             evaluated = await self._evaluate_population(population)
             evaluated.sort(key=lambda p: p.aggregate_score, reverse=True)
@@ -179,12 +189,6 @@ class EvolutionEngine:
             if best_overall is None or best.aggregate_score > best_overall.aggregate_score:
                 best_overall = best
 
-            logger.info(
-                "Best: %.4f (prompt %s)",
-                best.aggregate_score,
-                best.prompt_id,
-            )
-
             record = GenerationRecord(
                 generation=gen,
                 prompts=evaluated,
@@ -192,12 +196,21 @@ class EvolutionEngine:
                 best_prompt_id=best.prompt_id,
             )
 
+            self._emit(
+                "generation_end",
+                gen=gen,
+                best_score=best.aggregate_score,
+                scores=[pe.aggregate_score for pe in evaluated],
+            )
+
             if self._detector.check(best.aggregate_score):
-                logger.info("Stopping at generation %d", gen)
+                logger.info("Converged at generation %d (best=%.4f)", gen, best.aggregate_score)
+                self._emit("converged", gen=gen, score=best.aggregate_score)
                 return record
 
             population = await self._next_generation(evaluated, gen + 1)
 
+        self._emit("complete", gen=self._evolve_cfg.max_generations)
         return GenerationRecord(
             generation=self._evolve_cfg.max_generations - 1,
             prompts=[],

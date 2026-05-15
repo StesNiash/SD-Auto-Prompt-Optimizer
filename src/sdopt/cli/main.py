@@ -55,13 +55,30 @@ async def _run_optimization(cfg: RunConfig) -> None:
         cfg = await setup.run()
         progress.remove_task(task)
 
-        task = progress.add_task("Running evolution...", total=cfg.evolution.max_generations)
-        engine = EvolutionEngine(cfg, llm, sim_model, eval_model, gen_model)
+        gen_task = progress.add_task("Running evolution...", total=cfg.evolution.max_generations)
+
+        def _on_progress(event: str, data: dict) -> None:
+            if event == "generation_start":
+                gen = data["gen"]
+                max_gen = data["max_gen"]
+                progress.update(gen_task, description=f"Gen {gen}/{max_gen} — simulating...")
+            elif event == "generation_end":
+                gen = data["gen"]
+                scores = data["scores"]
+                best = data["best_score"]
+                progress.update(gen_task, advance=1)
+                progress.update(
+                    gen_task,
+                    description=f"Gen {gen} done — best {best:.3f} | scores: {[f'{s:.2f}' for s in scores[:3]]}...",
+                )
+                console.log(f"[cyan]Gen {gen}[/] best [green]{best:.4f}[/] | top-3: {[f'{s:.3f}' for s in scores[:3]]}")
+
+        engine = EvolutionEngine(cfg, llm, sim_model, eval_model, gen_model, on_event=_on_progress)
 
         logging.getLogger("sdopt.core.evolution").setLevel(logging.WARNING)
         result = await engine.run()
 
-        progress.update(task, completed=True, total=result.generation + 1)
+        progress.update(gen_task, completed=True, total=result.generation + 1)
 
     if not result.prompts:
         best_pe = None
