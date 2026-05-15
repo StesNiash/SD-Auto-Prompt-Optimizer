@@ -53,7 +53,7 @@ async def _run_optimization(cfg: RunConfig) -> None:
         task = progress.add_task("Setting up...", total=None)
         setup = SetupPipeline(llm, cfg)
         cfg = await setup.run()
-        progress.update(task, completed=True)
+        progress.remove_task(task)
 
         task = progress.add_task("Running evolution...", total=cfg.evolution.max_generations)
         engine = EvolutionEngine(cfg, llm, sim_model, eval_model, gen_model)
@@ -61,7 +61,7 @@ async def _run_optimization(cfg: RunConfig) -> None:
         logging.getLogger("sdopt.core.evolution").setLevel(logging.WARNING)
         result = await engine.run()
 
-        progress.update(task, completed=True)
+        progress.update(task, completed=True, total=result.generation + 1)
 
     if not result.prompts:
         best_pe = None

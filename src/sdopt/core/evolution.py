@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import random
 from typing import Sequence
@@ -15,6 +16,7 @@ from .models import (
     PromptVariant,
     RunConfig,
     TestCase,
+    TestResult,
 )
 from .simulator import AgentSimulator
 
@@ -206,15 +208,27 @@ class EvolutionEngine:
     async def _evaluate_population(
         self, population: list[PromptVariant]
     ) -> list[PromptEvaluation]:
-        results: list[PromptEvaluation] = []
-        for pv in population:
-            test_results = []
-            for tc in self._test_cases:
+        sem = asyncio.Semaphore(5)
+
+        async def _sim_one(pv: PromptVariant, tc: TestCase) -> TestResult:
+            async with sem:
                 tr = await self._simulator.simulate(pv.system_prompt, tc)
                 tr.prompt_id = pv.id
-                test_results.append(tr)
+                return tr
+
+        sim_tasks = [
+            _sim_one(pv, tc)
+            for pv in population
+            for tc in self._test_cases
+        ]
+        flat = await asyncio.gather(*sim_tasks)
+
+        n_tests = len(self._test_cases)
+        results: list[PromptEvaluation] = []
+        for i, pv in enumerate(population):
+            prompt_results = flat[i * n_tests : (i + 1) * n_tests]
             pe = await self._evaluator.evaluate_prompt(
-                pv.id, pv.system_prompt, test_results
+                pv.id, pv.system_prompt, prompt_results
             )
             results.append(pe)
         return results
