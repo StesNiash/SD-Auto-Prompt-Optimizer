@@ -111,6 +111,16 @@ class AgentSimulator:
             )
 
             if resp.tool_calls:
+                assistant_msg = {"role": "assistant", "content": resp.content}
+                assistant_msg["tool_calls"] = [
+                    {
+                        "id": tc.id,
+                        "type": "function",
+                        "function": {"name": tc.name, "arguments": tc.arguments},
+                    }
+                    for tc in resp.tool_calls
+                ]
+                messages.append(assistant_msg)
                 for tc in resp.tool_calls:
                     rec = executor.execute(tc.name, tc.arguments)
                     calls.append(rec)
