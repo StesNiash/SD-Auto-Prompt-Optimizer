@@ -102,8 +102,9 @@ class AgentSimulator:
         ]
 
         calls: list[ToolCallRecord] = []
+        seen_calls: set[tuple[str, str]] = set()
 
-        for _ in range(10):
+        for _ in range(5):
             resp = await self._llm.complete(
                 messages=messages,
                 model_cfg=self._model_cfg,
@@ -111,6 +112,18 @@ class AgentSimulator:
             )
 
             if resp.tool_calls:
+                for tc in resp.tool_calls:
+                    key = (tc.name, tc.arguments)
+                    if key in seen_calls:
+                        logger.warning("Duplicate tool call detected: %s", tc.name)
+                        return TestResult(
+                            prompt_id="",
+                            test_case=test_case,
+                            response=resp.content or "",
+                            tool_calls=calls,
+                        )
+                    seen_calls.add(key)
+
                 assistant_msg = {"role": "assistant", "content": resp.content}
                 assistant_msg["tool_calls"] = [
                     {
@@ -138,7 +151,7 @@ class AgentSimulator:
                 tool_calls=calls,
             )
 
-        logger.warning("Simulator reached max iterations")
+        logger.warning("Simulator reached max iterations (5)")
         return TestResult(
             prompt_id="",
             test_case=test_case,

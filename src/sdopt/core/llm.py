@@ -40,6 +40,7 @@ class LLMClient:
             messages=messages,
             temperature=model_cfg.temperature,
             max_tokens=model_cfg.max_tokens or 4096,
+            timeout=model_cfg.timeout,
         )
         if tools:
             kwargs["tools"] = tools

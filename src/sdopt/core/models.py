@@ -129,6 +129,7 @@ class ModelConfig(BaseModel):
     temperature: float = Field(default=0.0, ge=0.0, le=2.0)
     max_tokens: int | None = None
     api_base: str | None = None
+    timeout: int = 120
 
 
 class RunConfig(BaseModel):
