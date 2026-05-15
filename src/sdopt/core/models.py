@@ -93,6 +93,9 @@ class PromptEvaluation(BaseModel):
     test_results: list[EvaluatedTestResult]
     aggregate_score: float = Field(ge=0.0, le=1.0)
     feedback: list[str] = Field(default_factory=list)
+    generation: int = 0
+    strategy: str | None = None
+    parent_id: str | None = None
 
 
 class GenerationRecord(BaseModel):

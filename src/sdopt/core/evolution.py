@@ -175,6 +175,7 @@ class EvolutionEngine:
             self._cfg.basic_prompt, self._evolve_cfg.population_size
         )
         best_overall: PromptEvaluation | None = None
+        all_prompts: list[PromptEvaluation] = []
         record = GenerationRecord(generation=0, prompts=[], best_score=0.0, best_prompt_id="")
 
         n_prompts = len(population)
@@ -196,6 +197,7 @@ class EvolutionEngine:
                 best_score=best.aggregate_score,
                 best_prompt_id=best.prompt_id,
             )
+            all_prompts.extend(evaluated)
 
             self._emit(
                 "generation_end",
@@ -207,11 +209,13 @@ class EvolutionEngine:
             if self._detector.check(best.aggregate_score):
                 logger.info("Converged at generation %d (best=%.4f)", gen, best.aggregate_score)
                 self._emit("converged", gen=gen, score=best.aggregate_score)
+                record.prompts = all_prompts
                 return record
 
             population = await self._next_generation(evaluated, gen + 1)
 
         self._emit("complete", gen=self._evolve_cfg.max_generations)
+        record.prompts = all_prompts
         return record
 
     async def _evaluate_population(
@@ -239,6 +243,9 @@ class EvolutionEngine:
             pe = await self._evaluator.evaluate_prompt(
                 pv.id, pv.system_prompt, prompt_results
             )
+            pe.generation = pv.generation
+            pe.strategy = pv.strategy
+            pe.parent_id = pv.parent_id
             results.append(pe)
         return results
 
