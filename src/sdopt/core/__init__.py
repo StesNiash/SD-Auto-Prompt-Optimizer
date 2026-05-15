@@ -1,5 +1,6 @@
 from .config import Settings, load_config
 from .evaluation import Evaluator, Judge
+from .evolution import ConvergenceDetector, EvolutionEngine, PromptGenerator
 from .generators import FakeToolsGenerator, TestCasesGenerator
 from .llm import LLMClient, LLMResponse, ToolCall
 from .models import (
@@ -29,10 +30,13 @@ from .simulator import AgentSimulator, FakeToolExecutor
 
 __all__ = [
     "AgentSimulator",
+    "ConvergenceDetector",
     "Evaluator",
+    "EvolutionEngine",
     "FakeToolExecutor",
     "Judge",
     "LLMResponse",
+    "PromptGenerator",
     "ToolCall",
     "Settings",
     "load_config",

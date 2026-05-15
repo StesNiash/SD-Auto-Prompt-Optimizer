@@ -28,17 +28,9 @@
 - [x] Evaluator — скоринг и агрегация
 
 ## Phase 5: Evolutionary Loop
-- [ ] Implement `PromptGenerator`:
-  - Crossover strategy
-  - Targeted mutation strategy (анализ провалов → фикс)
-  - Baseline keeper
-- [ ] Implement `EvolutionEngine` — orchestrator:
-  - Управление популяцией
-  - Запуск тестирования
-  - Запуск оценки
-  - Селекция + мутация
-  - Проверка сходимости
-- [ ] Implement convergence detection (threshold / patience)
+- [x] PromptGenerator: crossover, targeted, baseline, all_strategies
+- [x] EvolutionEngine: population → simulate → evaluate → select → mutate
+- [x] ConvergenceDetector: threshold + patience
 
 ## Phase 6: CLI Interface
 - [ ] CLI с использованием Rich:
