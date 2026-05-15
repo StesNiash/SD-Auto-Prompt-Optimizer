@@ -32,7 +32,8 @@ Combine the strengths of both. The result should be better than either parent.
 Return ONLY the new prompt text."""
 
 TARGETED_PROMPT = """You are a prompt engineer. The following system prompt failed on specific test scenarios.
-Generate an improved version that handles these cases correctly while keeping what works.
+Below each failing scenario is a note from the evaluator explaining what went wrong.
+Generate an improved version that fixes these specific issues while keeping what works.
 Return ONLY the new prompt text."""
 
 BASELINE_PROMPT = """You are a prompt engineer. Rephrase the following system prompt.
@@ -135,11 +136,11 @@ class ConvergenceDetector:
             return True
         if len(self._best_scores) > self._cfg.patience:
             recent = self._best_scores[-self._cfg.patience :]
-            if max(recent) == min(recent):
+            if max(recent) - min(recent) < 0.01:
                 logger.info(
-                    "Converged: no improvement for %d generations (%.4f)",
+                    "Converged: no significant improvement for %d generations (best=%.4f)",
                     self._cfg.patience,
-                    recent[-1],
+                    max(recent),
                 )
                 return True
         return False
@@ -174,9 +175,9 @@ class EvolutionEngine:
             self._cfg.basic_prompt, self._evolve_cfg.population_size
         )
         best_overall: PromptEvaluation | None = None
+        record = GenerationRecord(generation=0, prompts=[], best_score=0.0, best_prompt_id="")
 
         n_prompts = len(population)
-        n_tests = len(self._test_cases)
 
         for gen in range(self._evolve_cfg.max_generations):
             logger.info("=== Generation %d (%d prompts) ===", gen, n_prompts)
@@ -211,12 +212,7 @@ class EvolutionEngine:
             population = await self._next_generation(evaluated, gen + 1)
 
         self._emit("complete", gen=self._evolve_cfg.max_generations)
-        return GenerationRecord(
-            generation=self._evolve_cfg.max_generations - 1,
-            prompts=[],
-            best_score=(best_overall.aggregate_score if best_overall else 0.0),
-            best_prompt_id=(best_overall.prompt_id if best_overall else ""),
-        )
+        return record
 
     async def _evaluate_population(
         self, population: list[PromptVariant]
@@ -323,6 +319,8 @@ class EvolutionEngine:
     def _find_failures(self, pe: PromptEvaluation | None) -> list[str]:
         if not pe:
             return []
+        if pe.feedback:
+            return [f for f in pe.feedback if f][:5]
         failures = []
         for etr in pe.test_results:
             if etr.scores.aggregate < 0.5:

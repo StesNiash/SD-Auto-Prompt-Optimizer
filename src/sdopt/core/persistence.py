@@ -24,18 +24,17 @@ class RunDatabase:
     def __init__(self, db_path: str | Path | None = None):
         self._path = Path(db_path) if db_path else DEFAULT_DB_PATH
         self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = None
+        self._init_db()
 
     def _connect(self):
         import sqlite3
-        if self._conn is None:
-            self._conn = sqlite3.connect(str(self._path))
-            self._conn.row_factory = sqlite3.Row
-            self._init_db()
-        return self._conn
+        conn = sqlite3.connect(str(self._path))
+        conn.row_factory = sqlite3.Row
+        return conn
 
     def _init_db(self):
-        self._conn.execute("""
+        conn = self._connect()
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS runs (
                 id TEXT PRIMARY KEY,
                 created_at TEXT NOT NULL,
@@ -45,63 +44,78 @@ class RunDatabase:
                 result_json TEXT
             )
         """)
-        self._conn.commit()
+        conn.commit()
+        conn.close()
 
     def create_run(self, cfg: RunConfig) -> str:
         run_id = uuid.uuid4().hex[:12]
         now = datetime.now(timezone.utc).isoformat()
-        self._connect().execute(
+        conn = self._connect()
+        conn.execute(
             "INSERT INTO runs (id, created_at, updated_at, status, config_json) VALUES (?, ?, ?, 'running', ?)",
             (run_id, now, now, cfg.model_dump_json()),
         )
-        self._conn.commit()
+        conn.commit()
+        conn.close()
         return run_id
 
     def finish_run(self, run_id: str, result: GenerationRecord) -> None:
         now = datetime.now(timezone.utc).isoformat()
-        self._connect().execute(
+        conn = self._connect()
+        conn.execute(
             "UPDATE runs SET status = 'completed', updated_at = ?, result_json = ? WHERE id = ?",
             (now, result.model_dump_json(), run_id),
         )
-        self._conn.commit()
+        conn.commit()
+        conn.close()
 
     def fail_run(self, run_id: str, error: str) -> None:
         now = datetime.now(timezone.utc).isoformat()
-        self._connect().execute(
+        conn = self._connect()
+        conn.execute(
             "UPDATE runs SET status = 'failed', updated_at = ?, result_json = ? WHERE id = ?",
             (now, json.dumps({"error": error}), run_id),
         )
-        self._conn.commit()
+        conn.commit()
+        conn.close()
 
     def get_run(self, run_id: str) -> dict | None:
-        row = self._connect().execute(
-            "SELECT * FROM runs WHERE id = ?", (run_id,)
-        ).fetchone()
-        if row is None:
-            return None
-        return dict(row)
+        conn = self._connect()
+        try:
+            row = conn.execute(
+                "SELECT * FROM runs WHERE id = ?", (run_id,)
+            ).fetchone()
+            if row is None:
+                return None
+            return dict(row)
+        finally:
+            conn.close()
 
     def list_runs(self) -> list[dict]:
-        rows = self._connect().execute(
-            "SELECT id, created_at, status, config_json, result_json FROM runs ORDER BY created_at DESC"
-        ).fetchall()
-        result = []
-        for row in rows:
-            d = dict(row)
-            try:
-                cfg = json.loads(d.pop("config_json"))
-                d["scenario"] = cfg.get("scenario", "")[:80]
-                d["model"] = cfg.get("models", {}).get("simulation", {}).get("model", "?")
-            except Exception:
-                d["scenario"] = "?"
-                d["model"] = "?"
-            try:
-                res = json.loads(d.get("result_json") or "{}")
-                d["best_score"] = res.get("best_score")
-            except Exception:
-                d["best_score"] = None
-            result.append(d)
-        return result
+        conn = self._connect()
+        try:
+            rows = conn.execute(
+                "SELECT id, created_at, status, config_json, result_json FROM runs ORDER BY created_at DESC"
+            ).fetchall()
+            result = []
+            for row in rows:
+                d = dict(row)
+                try:
+                    cfg = json.loads(d.pop("config_json"))
+                    d["scenario"] = cfg.get("scenario", "")[:80]
+                    d["model"] = cfg.get("models", {}).get("simulation", {}).get("model", "?")
+                except Exception:
+                    d["scenario"] = "?"
+                    d["model"] = "?"
+                try:
+                    res = json.loads(d.get("result_json") or "{}")
+                    d["best_score"] = res.get("best_score")
+                except Exception:
+                    d["best_score"] = None
+                result.append(d)
+            return result
+        finally:
+            conn.close()
 
     def export_run(self, run_id: str, fmt: str = "json") -> str | None:
         row = self.get_run(run_id)
@@ -159,6 +173,4 @@ class RunDatabase:
         return "\n".join(lines)
 
     def close(self) -> None:
-        if self._conn:
-            self._conn.close()
-            self._conn = None
+        pass

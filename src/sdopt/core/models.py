@@ -79,6 +79,7 @@ class EvaluationScore(BaseModel):
     helpfulness: float = Field(ge=0.0, le=1.0)
     robustness: float = Field(ge=0.0, le=1.0)
     aggregate: float = Field(ge=0.0, le=1.0)
+    notes: str = ""
 
 
 class EvaluatedTestResult(BaseModel):
@@ -91,6 +92,7 @@ class PromptEvaluation(BaseModel):
     system_prompt: str
     test_results: list[EvaluatedTestResult]
     aggregate_score: float = Field(ge=0.0, le=1.0)
+    feedback: list[str] = Field(default_factory=list)
 
 
 class GenerationRecord(BaseModel):

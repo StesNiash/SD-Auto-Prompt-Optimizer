@@ -35,7 +35,8 @@ Return ONLY a JSON object:
   "helpfulness": 0.0-1.0,
   "helpfulness_reason": "...",
   "robustness": 0.0-1.0,
-  "robustness_reason": "..."
+  "robustness_reason": "...",
+  "notes": "Brief summary of what went wrong (if anything) — what the agent missed, which tools it misused, or how the response failed. Empty string if perfect."
 }"""
 
 
@@ -109,6 +110,7 @@ Tool calls made:
             helpfulness=raw_scores["helpfulness"],
             robustness=raw_scores["robustness"],
             aggregate=round(aggregate, 4),
+            notes=data.get("notes", ""),
         )
 
 
@@ -131,9 +133,16 @@ class Evaluator:
             else 0.0
         )
 
+        feedback = []
+        for e in evaluated:
+            if e.scores.notes:
+                inp = e.test_result.test_case.input[:80]
+                feedback.append(f"[{inp}] {e.scores.notes}")
+
         return PromptEvaluation(
             prompt_id=prompt_id,
             system_prompt=system_prompt,
             test_results=evaluated,
             aggregate_score=round(aggregate, 4),
+            feedback=feedback,
         )
