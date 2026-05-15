@@ -78,7 +78,7 @@ async def _run_optimization(cfg: RunConfig) -> None:
         logging.getLogger("sdopt.core.evolution").setLevel(logging.WARNING)
         result = await engine.run()
 
-        progress.update(gen_task, completed=True, total=result.generation + 1)
+        progress.update(gen_task, completed=result.generation + 1)
 
     if not result.prompts:
         best_pe = None
