@@ -56,26 +56,29 @@ test_cases:
       - error_case
 
 evolution:
-  strategy: all  # crossover | targeted | baseline | all
-  population_size: 8
+  strategy: targeted  # crossover | targeted | baseline | all
+  population_size: 4
   selection_top_k: 3
-  max_generations: 10
+  max_generations: 5
   convergence_threshold: 0.95
   patience: 3
 
 models:
   generation:
-    provider: openai
-    model: gpt-4o-mini
+    provider: openrouter
+    model: openai/gpt-4o-mini
     temperature: 0.8
+    api_base: https://openrouter.ai/api/v1
   evaluation:
-    provider: openai
-    model: gpt-4o
+    provider: openrouter
+    model: openai/gpt-4o-mini
     temperature: 0.0
+    api_base: https://openrouter.ai/api/v1
   simulation:
-    provider: openai
-    model: gpt-4o-mini
+    provider: openrouter
+    model: openai/gpt-4o-mini
     temperature: 0.0
+    api_base: https://openrouter.ai/api/v1
   # Example with OpenRouter (requires SDOPT_OPENROUTER_API_KEY):
   # generation:
   #   provider: openrouter

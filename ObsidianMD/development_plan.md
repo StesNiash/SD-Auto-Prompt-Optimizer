@@ -51,12 +51,14 @@
 - [x] sdopt list / view / compare — все работают через базу
 
 ## Phase 8: UI (Web)
-- [ ] React + TypeScript + Vite setup
-- [ ] React Flow для evolution tree
-- [ ] API endpoints (FastAPI) для данных
-- [ ] Drill-down: prompt → test results
-- [ ] Copy-to-clipboard
+- [x] React + TypeScript + Vite setup
+- [x] React Flow для evolution tree
+- [x] API endpoints (FastAPI) для данных
+- [x] Drill-down: prompt → test results
+- [x] Copy-to-clipboard
 - [ ] WebSocket для live progress
+- [x] `sdopt serve` CLI command
+- [x] TypeScript bugfixes: unknown generation cast, Controls style
 
 ## Phase 9: Testing & Polish
 - [ ] Unit tests: models, simulator, evaluator

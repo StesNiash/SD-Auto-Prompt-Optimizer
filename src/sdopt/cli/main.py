@@ -251,6 +251,16 @@ def cmd_compare(args: argparse.Namespace) -> None:
     console.print(table)
 
 
+def cmd_serve(args: argparse.Namespace) -> None:
+    try:
+        from sdopt.web.server import serve as _serve
+    except ImportError:
+        console.print("[red]Missing dependencies: pip install 'sdopt[web]'[/red]")
+        return
+    console.log(f"UI server starting on http://{args.host}:{args.port}")
+    _serve(host=args.host, port=args.port)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="sdopt",
@@ -280,6 +290,11 @@ def main() -> None:
     cmp_p.add_argument("run_a", type=str)
     cmp_p.add_argument("run_b", type=str)
     cmp_p.set_defaults(func=cmd_compare)
+
+    serve_p = sub.add_parser("serve", help="Start web UI")
+    serve_p.add_argument("--host", type=str, default="127.0.0.1")
+    serve_p.add_argument("--port", type=int, default=8512)
+    serve_p.set_defaults(func=cmd_serve)
 
     args = parser.parse_args()
     args.func(args)

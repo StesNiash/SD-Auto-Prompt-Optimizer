@@ -33,3 +33,8 @@ nul
 # ObsidianMD
 ObsidianMD/.obsidian/workspace.json
 /ObsidianMD/.obsidian
+
+# Node
+ui/node_modules/
+ui/dist/
+ui/tsconfig.tsbuildinfo
